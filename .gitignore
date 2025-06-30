@@ -1,0 +1,64 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+.venv/
+.env/
+
+# Environment variables
+.env
+*.env
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Testing cache
+.pytest_cache/
+.tox/
+.coverage
+coverage.xml
+htmlcov/
+
+# FastAPI and Uvicorn logs
+*.log
+
+# mypy & Pylint reports
+.mypy_cache/
+.dmypy.json
+.pyre/
+
+# pyright
+.pyright/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+
+# Database files
+*.sqlite3
+*.db
+
+# Uploads / media / user-generated files
+uploads/
+media/
+files/
+
+# Docker
+*.pid
+*.sock
+docker-compose.override.yml
+
+# LLM / RAG 
+vector_store/
+index_store/
+cache/
+
