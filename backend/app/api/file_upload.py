@@ -10,15 +10,6 @@ from ..db.models import file_db
 
 router = APIRouter()
 
-@router.get('/')
-def get_file():
-    return 'Hi'
-
-
-@router.get('/{id}')
-def get_file(id: int):
-    return id
-
 @router.post('/file')
 async def upload_file(file: UploadFile = File(), db: Session = Depends(get_db)):
     
