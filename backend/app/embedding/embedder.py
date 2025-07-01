@@ -19,7 +19,8 @@ def create_embeddings(docs):
     vectors = []
     for doc in docs:
         text = doc.page_content
-        metadata = doc.metadata
+        metadata = dict(doc.metadata)
+        metadata["text"] = text
         doc_id = doc.id or str(uuid4())      # Generate random id if id in docs is null
 
         embedding = hf.embed_query(text)

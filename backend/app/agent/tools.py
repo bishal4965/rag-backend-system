@@ -38,21 +38,25 @@ class VectorSearchTool(BaseTool):
             vector=query_embed,
             top_k=3,
             include_metadata=True,
-            metric=self.method
+            metric=self.method,
+            include_values=False
         )
 
-        if not results:
+        matches = getattr(results, "matches", []) 
+        if not matches:
             return "No matching content found."
-        
-        print(results)
-        results = "\n\n".join([match['metadata']['text'] for match in results if 'text' in match['metadata']])
-        print(f"Retrieving {len(results.strip("\n\n"))} document chunks")
-        return results
+
+        chunks = [m.metadata.get("text", "") for m in matches if "text" in m.metadata]
+        if not chunks:
+            return "No text metadata found in the results."
+
+        print(f"Retrieving {len(chunks)} document chunks")
+        return "\n\n".join(chunks)
     
 
-    async def _arun(self, query: str) -> str:
-        """Async version of the tool"""
-        return self._run(query)
+    # async def _arun(self, query: str) -> str:
+    #     """Async version of the tool"""
+    #     return self._run(query)
 
 
 
