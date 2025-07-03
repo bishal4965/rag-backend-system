@@ -20,11 +20,9 @@ MAX_HISTORY = 10
 # State schema
 class AgentState(TypedDict):
     query: str
-    # context: str
     messages: Annotated[Sequence[BaseMessage], add_messages]
     error_msg: Optional[HTTPException]
-    # max_iterations: int
-    # current_iteration: int
+   
 
 
 # Initialize semantic cache
@@ -34,6 +32,13 @@ db = next(get_booking_db())
 
 retriever_tool = VectorSearchTool()
 booking_tool = InterviewBookingTool(db)
+booking_tool.description = (
+    "For booking interviews. Call me multiple times as you gather information. "
+    "I'll guide you through collecting: full_name, email, date, time. "
+    "Always call me with just the new information provided by the user."
+    "Once all the user information are collected then send mail by invoking me and return the appointment summary."
+)
+
 tools = [retriever_tool, booking_tool]
 llm = ChatGroq(
                 temperature=0.7,
@@ -46,22 +51,10 @@ def agent(state: AgentState) -> AgentState:
     """Agent node that decides which tool to call"""
 
     print("[GRAPH NODE] LLM generation Invoked")
-    # if context:
-    # context = state.get("context", "")
+    
     query = state["query"]
     messages = state.get("messages", [])
-    # current_iteration = state.get("current_iteration", 0)
-    # max_iterations = state.get("max_iterations", 3)
 
-    # if current_iteration >= max_iterations:
-    #     print("Max iterations reached. Providing answer with available context.")
-    #     final_message = AIMessage(
-    #         content=f"Based on the available information: {context if context else 'No relevant documents found.'}"
-    #     )
-    #     return {
-    #         "messages": state["messages"] + [final_message],
-    #         "current_iteration": current_iteration + 1
-    #         }
 
     system_message = SystemMessage(
         content="You are a helpful assistant that answers questions based on retrieved documents.\n"
@@ -71,14 +64,17 @@ def agent(state: AgentState) -> AgentState:
                 "Base your answers on the retrieved content.\n"
                 "Be precise and concise.\n"
                 "Use the InterviewBooking tool to help user book an appointment for interview.\n"
+                "Guide users through:\n"
+                "1. Collect name\n2. Collect email\n3. Schedule date\n4. Schedule time\n"
+                "Use InterviewBooking tool for each step - call it with new information as users provide it.\n"
+                "Never ask for multiple fields at once. Only ask for the next missing field.\n"
                 "Decide which tool to use based on user's intent."
                 )
                 
     human_message = HumanMessage(content=query)
     if not messages:
         messages = [system_message, human_message]
-    # else:
-    #     messages = messages + [human_message]
+    
     elif messages and not isinstance(messages[-1], ToolMessage):
         # Adds human message to the maessage list if the last message is not a ToolMessage
         messages = messages + [human_message]
@@ -93,7 +89,6 @@ def agent(state: AgentState) -> AgentState:
         return {"messages": trimmed_msg,
                 "query": query,
                 "error_msg": None
-                # "current_iteration": current_iteration + 1
             }        
 
     except Exception as e:
@@ -103,13 +98,6 @@ def agent(state: AgentState) -> AgentState:
 
 def should_continue(state: AgentState) -> AgentState:
     """Decide whether the agent should continue tool calling"""
-
-    # if state["messages"]:
-    #     last_message = state["messages"][-1]
-    #     if last_message.tool_calls:
-    #         return "tools"
-    #     else:
-    #         return "exit"
 
     for msg in reversed(state["messages"]):
         if hasattr(msg, "tool_calls"):
