@@ -92,40 +92,6 @@ def agent(state: AgentState) -> AgentState:
                 
                 )
     
-        
-        # "2. If tool returns 'VALIDATION_ERROR: <field>_INVALID', re-ask the user for SAME field by returning the tool message.\n"
-    
-        # "4. For dates, always request in YYYY-MM-DD format and verify it's in the future\n"
-        # "5. For times, request in 24h format (HH:MM) or 12h format (e.g., 2:30pm)\n"
-    
-    # "CRITICAL BOOKING INSTRUCTIONS:\n"
-    #             "1. Use ONLY the InterviewBooking tool for booking steps\n"
-    #             "2. Follow this EXACT workflow:\n"
-    #             "   a. Collect full name → b. Collect email → c. Schedule date → d. Schedule time\n"
-    #             "3. For each step:\n"
-    #             "   - Call InterviewBooking with JUST the new information\n"
-    #             "   - If it returns a VALIDATION_ERROR, re-ask for SAME field\n"
-    #             "   - If it returns a question, output it VERBATIM\n"
-    #             "4. Date format: ALWAYS use YYYY-MM-DD\n"
-    #             "5. Time format: Use 12h (2:30pm) or 24h (14:30)\n"
-    #             "6. After booking completion, the tool returns confirmation - show this to user\n\n"
-                
-    #             "NEVER skip steps or ask for multiple fields at once!"
-    #             "Decide which tool to use based on user's intent."
-    
-
-
-    # "EXAMPLE WORKFLOW:\n"
-    #             "- User: 'I want to book an interview'\n"
-    #             "- You: 'Please provide your full name' (via InterviewBooking)\n"
-    #             "- User: 'John Doe'\n"
-    #             "- You: 'What's your email address?' (via InterviewBooking)\n"
-    #             "- ... continues until all fields collected\n\n"
-    
-    # "Guide users through:\n"
-    # "1. Collect name\n2. Collect email\n3. Schedule date\n4. Schedule time\n"
-    # "Use InterviewBooking tool for each step - call it with new information as users provide it.\n"
-    # "Never ask for multiple fields at once. Only ask for the next missing field.\n"
                 
     human_message = HumanMessage(content=query)
     if not messages:
